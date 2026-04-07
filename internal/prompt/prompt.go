@@ -3,26 +3,40 @@ package prompt
 import (
 	"bufio"
 	"fmt"
-	"os"
+	"io"
 	"strconv"
 	"strings"
 )
 
-var scanner = bufio.NewScanner(os.Stdin)
+// Prompter handles interactive user input
+type Prompter struct {
+	in      io.Reader
+	out     io.Writer
+	scanner *bufio.Scanner
+}
+
+// New creates a new Prompter with the given input and output streams
+func New(in io.Reader, out io.Writer) *Prompter {
+	return &Prompter{
+		in:      in,
+		out:     out,
+		scanner: bufio.NewScanner(in),
+	}
+}
 
 // String prompts for a string with a default value
-func String(message, defaultValue string) string {
+func (p *Prompter) String(message, defaultValue string) string {
 	if defaultValue != "" {
-		fmt.Printf("%s [%s]: ", message, defaultValue)
+		fmt.Fprintf(p.out, "%s [%s]: ", message, defaultValue)
 	} else {
-		fmt.Printf("%s: ", message)
+		fmt.Fprintf(p.out, "%s: ", message)
 	}
 
-	if !scanner.Scan() {
+	if !p.scanner.Scan() {
 		return defaultValue
 	}
 
-	input := strings.TrimSpace(scanner.Text())
+	input := strings.TrimSpace(p.scanner.Text())
 	if input == "" {
 		return defaultValue
 	}
@@ -30,19 +44,19 @@ func String(message, defaultValue string) string {
 }
 
 // Bool prompts for a yes/no answer
-func Bool(message string, defaultValue bool) bool {
+func (p *Prompter) Bool(message string, defaultValue bool) bool {
 	defaultStr := "y/N"
 	if defaultValue {
 		defaultStr = "Y/n"
 	}
 
-	fmt.Printf("%s [%s]: ", message, defaultStr)
+	fmt.Fprintf(p.out, "%s [%s]: ", message, defaultStr)
 
-	if !scanner.Scan() {
+	if !p.scanner.Scan() {
 		return defaultValue
 	}
 
-	input := strings.ToLower(strings.TrimSpace(scanner.Text()))
+	input := strings.ToLower(strings.TrimSpace(p.scanner.Text()))
 	if input == "" {
 		return defaultValue
 	}
@@ -51,23 +65,23 @@ func Bool(message string, defaultValue bool) bool {
 }
 
 // Select prompts the user to select an option from a list
-func Select(message string, options []string) int {
-	fmt.Println(message)
+func (p *Prompter) Select(message string, options []string) int {
+	fmt.Fprintln(p.out, message)
 	for i, opt := range options {
-		fmt.Printf("%d. %s\n", i+1, opt)
+		fmt.Fprintf(p.out, "%d. %s\n", i+1, opt)
 	}
 
 	for {
-		fmt.Print("Select an option: ")
-		if !scanner.Scan() {
+		fmt.Fprint(p.out, "Select an option: ")
+		if !p.scanner.Scan() {
 			return 0
 		}
 
-		input := strings.TrimSpace(scanner.Text())
+		input := strings.TrimSpace(p.scanner.Text())
 		choice, err := strconv.Atoi(input)
 		if err == nil && choice >= 1 && choice <= len(options) {
 			return choice - 1
 		}
-		fmt.Println("Invalid selection. Please try again.")
+		fmt.Fprintln(p.out, "Invalid selection. Please try again.")
 	}
 }

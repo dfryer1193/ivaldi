@@ -36,12 +36,14 @@ func Run(mode string, modulePrefix string) error {
 		GoVersion: "1.26",
 	}
 
+	p := prompt.New(os.Stdin, os.Stdout)
+
 	if mode == "init" {
 		fmt.Println("=== Ivaldi Project Scaffold ===")
-		projectCfg.ModulePath = prompt.String("Module Path", defaultModulePath)
+		projectCfg.ModulePath = p.String("Module Path", defaultModulePath)
 
 		fmt.Println("\nConfigure binaries (comma separated names). Leave blank to finish.")
-		binariesInput := prompt.String("Binaries", baseDirName)
+		binariesInput := p.String("Binaries", baseDirName)
 
 		var binaries []scaffold.Binary
 		for _, name := range strings.Split(binariesInput, ",") {
@@ -57,7 +59,7 @@ func Run(mode string, modulePrefix string) error {
 				"Interactive CLI",
 			}
 
-			choice := prompt.Select(fmt.Sprintf("Select type for binary '%s':", name), opts)
+			choice := p.Select(fmt.Sprintf("Select type for binary '%s':", name), opts)
 
 			var binType string
 			switch choice {
@@ -78,7 +80,7 @@ func Run(mode string, modulePrefix string) error {
 		}
 		projectCfg.Binaries = binaries
 
-		projectCfg.SetupCI = prompt.Bool("Setup GitHub Actions CI?", false)
+		projectCfg.SetupCI = p.Bool("Setup GitHub Actions CI?", false)
 
 		fmt.Println("\nInitializing go.mod...")
 		if err := scaffold.InitGoMod(projectCfg.ModulePath); err != nil {
