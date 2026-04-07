@@ -1,0 +1,39 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
+)
+
+func main() {
+	fmt.Println("Welcome to {{ .BinaryName }} Interactive Mode!")
+	fmt.Println("Type 'exit' to quit.")
+
+	scanner := bufio.NewScanner(os.Stdin)
+
+	for {
+		fmt.Print("> ")
+		if !scanner.Scan() {
+			break
+		}
+
+		input := strings.TrimSpace(scanner.Text())
+		if input == "" {
+			continue
+		}
+
+		if strings.ToLower(input) == "exit" {
+			fmt.Println("Goodbye!")
+			break
+		}
+
+		fmt.Printf("You entered: %s\n", input)
+		// TODO: Implement interactive logic here
+	}
+
+	if err := scanner.Err(); err != nil {
+		fmt.Fprintf(os.Stderr, "Error reading input: %v\n", err)
+	}
+}

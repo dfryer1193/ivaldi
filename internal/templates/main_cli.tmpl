@@ -1,0 +1,27 @@
+package main
+
+import (
+	"flag"
+	"fmt"
+	"os"
+)
+
+func main() {
+	var verbose bool
+	flag.BoolVar(&verbose, "v", false, "Enable verbose output")
+	flag.Parse()
+
+	if verbose {
+		fmt.Println("Verbose mode enabled")
+	}
+
+	args := flag.Args()
+	if len(args) == 0 {
+		fmt.Println("Usage: {{ .BinaryName }} [options] <command>")
+		os.Exit(1)
+	}
+
+	command := args[0]
+	fmt.Printf("Executing command: %s\n", command)
+	// TODO: Implement CLI logic
+}
