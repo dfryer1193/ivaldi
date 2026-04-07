@@ -46,7 +46,7 @@ func Run(mode string, modulePrefix string) error {
 		binariesInput := p.String("Binaries", baseDirName)
 
 		var binaries []scaffold.Binary
-		for _, name := range strings.Split(binariesInput, ",") {
+		for name := range strings.SplitSeq(binariesInput, ",") {
 			name = strings.TrimSpace(name)
 			if name == "" {
 				continue
@@ -101,7 +101,6 @@ func Run(mode string, modulePrefix string) error {
 		if err := scaffold.RunGoModTidy(); err != nil {
 			fmt.Printf("Warning: go mod tidy failed: %v\n", err)
 		}
-
 	} else {
 		// For update and clobber, we try to detect existing binaries from the Makefile or cmd/ dir
 		// We'll just infer binaries from the directories in cmd/

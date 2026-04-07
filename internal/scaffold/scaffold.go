@@ -92,7 +92,7 @@ func WriteMainFiles(config *ProjectConfig) error {
 	return nil
 }
 
-func generateTemplate(name, content string, data interface{}) ([]byte, error) {
+func generateTemplate(name, content string, data any) ([]byte, error) {
 	tmpl, err := template.New(name).Parse(content)
 	if err != nil {
 		return nil, err

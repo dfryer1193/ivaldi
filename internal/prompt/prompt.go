@@ -8,14 +8,14 @@ import (
 	"strings"
 )
 
-// Prompter handles interactive user input
+// Prompter handles interactive user input.
 type Prompter struct {
 	in      io.Reader
 	out     io.Writer
 	scanner *bufio.Scanner
 }
 
-// New creates a new Prompter with the given input and output streams
+// New creates a new Prompter with the given input and output streams.
 func New(in io.Reader, out io.Writer) *Prompter {
 	return &Prompter{
 		in:      in,
@@ -24,7 +24,7 @@ func New(in io.Reader, out io.Writer) *Prompter {
 	}
 }
 
-// String prompts for a string with a default value
+// String prompts for a string with a default value.
 func (p *Prompter) String(message, defaultValue string) string {
 	if defaultValue != "" {
 		fmt.Fprintf(p.out, "%s [%s]: ", message, defaultValue)
@@ -43,7 +43,7 @@ func (p *Prompter) String(message, defaultValue string) string {
 	return input
 }
 
-// Bool prompts for a yes/no answer
+// Bool prompts for a yes/no answer.
 func (p *Prompter) Bool(message string, defaultValue bool) bool {
 	defaultStr := "y/N"
 	if defaultValue {
@@ -64,7 +64,7 @@ func (p *Prompter) Bool(message string, defaultValue bool) bool {
 	return input == "y" || input == "yes"
 }
 
-// Select prompts the user to select an option from a list
+// Select prompts the user to select an option from a list.
 func (p *Prompter) Select(message string, options []string) int {
 	fmt.Fprintln(p.out, message)
 	for i, opt := range options {
