@@ -1,7 +1,8 @@
-package prompt
+package prompt_test
 
 import (
 	"bytes"
+	"ivaldi/internal/prompt"
 	"strings"
 	"testing"
 )
@@ -54,7 +55,7 @@ func TestString(t *testing.T) {
 			in := strings.NewReader(tt.input)
 			var out bytes.Buffer
 
-			p := New(in, &out)
+			p := prompt.New(in, &out)
 			ans := p.String(tt.message, tt.defaultValue)
 
 			if ans != tt.expectedAns {
@@ -123,7 +124,7 @@ func TestBool(t *testing.T) {
 			in := strings.NewReader(tt.input)
 			var out bytes.Buffer
 
-			p := New(in, &out)
+			p := prompt.New(in, &out)
 			ans := p.Bool(tt.message, tt.defaultValue)
 
 			if ans != tt.expectedAns {
@@ -172,7 +173,7 @@ func TestSelect(t *testing.T) {
 			in := strings.NewReader(tt.input)
 			var out bytes.Buffer
 
-			p := New(in, &out)
+			p := prompt.New(in, &out)
 			ans := p.Select(tt.message, tt.options)
 
 			if ans != tt.expectedAns {

@@ -6,6 +6,8 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
+const yamlIndent = 2
+
 // YAML safely merges the src yaml into the dst yaml.
 // Existing keys in dst are preserved, missing keys are added from src.
 func YAML(dst, src []byte) ([]byte, error) {
@@ -29,11 +31,13 @@ func YAML(dst, src []byte) ([]byte, error) {
 
 	var buf bytes.Buffer
 	encoder := yaml.NewEncoder(&buf)
-	encoder.SetIndent(2)
+	encoder.SetIndent(yamlIndent)
 	if err := encoder.Encode(&dstNode); err != nil {
 		return nil, err
 	}
-	encoder.Close()
+	if err := encoder.Close(); err != nil {
+		return nil, err
+	}
 
 	return buf.Bytes(), nil
 }

@@ -1,6 +1,7 @@
-package config
+package config_test
 
 import (
+	"ivaldi/internal/config"
 	"os"
 	"path/filepath"
 	"testing"
@@ -19,7 +20,7 @@ func TestLoadSaveConfig(t *testing.T) {
 	}
 
 	// Test Loading non-existent config
-	cfg, err := LoadConfig()
+	cfg, err := config.LoadConfig()
 	if err != nil {
 		t.Fatalf("unexpected error loading non-existent config: %v", err)
 	}
@@ -29,18 +30,20 @@ func TestLoadSaveConfig(t *testing.T) {
 
 	// Test Saving config
 	cfg.ModulePrefix = "github.com/test/user"
-	if err := SaveConfig(cfg); err != nil {
+	err = config.SaveConfig(cfg)
+	if err != nil {
 		t.Fatalf("failed to save config: %v", err)
 	}
 
 	// Verify file exists
 	expectedPath := filepath.Join(configDir, "ivaldi", "config.yaml")
-	if _, err := os.Stat(expectedPath); os.IsNotExist(err) {
+	_, err = os.Stat(expectedPath)
+	if os.IsNotExist(err) {
 		t.Errorf("expected config file to be created at %s", expectedPath)
 	}
 
 	// Test Loading existing config
-	cfg2, err := LoadConfig()
+	cfg2, err := config.LoadConfig()
 	if err != nil {
 		t.Fatalf("failed to load config: %v", err)
 	}

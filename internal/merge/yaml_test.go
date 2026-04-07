@@ -1,7 +1,8 @@
-package merge
+package merge_test
 
 import (
 	"bytes"
+	"ivaldi/internal/merge"
 	"testing"
 )
 
@@ -27,17 +28,7 @@ linters:
   disable-all: true
 `)
 
-	// Our deep merge should:
-	// - Preserve max-same-issues: 10
-	// - Add exclude-use-default: false
-	// - For arrays, our naive merge currently merges map keys but not elements.
-	// Let's see what the current merge logic outputs. We expect it to add missing keys at mapping level.
-	// Array merging is not deeply handled by our simple naive logic; it just treats them as scalar or skips.
-	// Actually, wait, our YAML merge logic:
-	// "Existing keys in dst are preserved, missing keys are added from src."
-	// Let's test the map merging logic.
-
-	result, err := YAML(dst, src)
+	result, err := merge.YAML(dst, src)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

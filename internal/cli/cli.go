@@ -1,4 +1,5 @@
-package cli
+//nolint:forbidigo // This file is a cli UI intended to be used for user interaction, so fmt and os are appropriate here.
+package cli //nolint:cyclop // Complex logic for project initialization.
 
 import (
 	"fmt"
@@ -11,6 +12,14 @@ import (
 	"ivaldi/internal/scaffold"
 )
 
+const (
+	choiceHTTP        = 0
+	choiceWorker      = 1
+	choiceCLI         = 2
+	choiceInteractive = 3
+)
+
+//nolint:gocognit,nestif,funlen // Complex project initialization logic is inherently nested.
 func Run(mode string, modulePrefix string) error {
 	cfg, err := config.LoadConfig()
 	if err != nil {
@@ -63,13 +72,13 @@ func Run(mode string, modulePrefix string) error {
 
 			var binType string
 			switch choice {
-			case 0:
+			case choiceHTTP:
 				binType = "http"
-			case 1:
+			case choiceWorker:
 				binType = "worker"
-			case 2:
+			case choiceCLI:
 				binType = "cli"
-			case 3:
+			case choiceInteractive:
 				binType = "interactive"
 			}
 
@@ -83,28 +92,33 @@ func Run(mode string, modulePrefix string) error {
 		projectCfg.SetupCI = p.Bool("Setup GitHub Actions CI?", false)
 
 		fmt.Println("\nInitializing go.mod...")
-		if err := scaffold.InitGoMod(projectCfg.ModulePath); err != nil {
+		err = scaffold.InitGoMod(projectCfg.ModulePath)
+		if err != nil {
 			return fmt.Errorf("go mod init failed: %w", err)
 		}
 
 		fmt.Println("Creating directories...")
-		if err := scaffold.CreateDirectories(projectCfg.Binaries); err != nil {
+		err = scaffold.CreateDirectories(projectCfg.Binaries)
+		if err != nil {
 			return err
 		}
 
 		fmt.Println("Writing main.go files...")
-		if err := scaffold.WriteMainFiles(projectCfg); err != nil {
+		err = scaffold.WriteMainFiles(projectCfg)
+		if err != nil {
 			return err
 		}
 
 		fmt.Println("Running go mod tidy to fetch dependencies...")
-		if err := scaffold.RunGoModTidy(); err != nil {
+		err = scaffold.RunGoModTidy()
+		if err != nil {
 			fmt.Printf("Warning: go mod tidy failed: %v\n", err)
 		}
 	} else {
 		// For update and clobber, we try to detect existing binaries from the Makefile or cmd/ dir
 		// We'll just infer binaries from the directories in cmd/
-		entries, err := os.ReadDir("cmd")
+		var entries []os.DirEntry
+		entries, err = os.ReadDir("cmd")
 		if err == nil {
 			for _, entry := range entries {
 				if entry.IsDir() {
@@ -118,7 +132,8 @@ func Run(mode string, modulePrefix string) error {
 	}
 
 	fmt.Printf("Writing tooling files (mode: %s)...\n", mode)
-	if err := scaffold.WriteTooling(projectCfg, mode); err != nil {
+	err = scaffold.WriteTooling(projectCfg, mode)
+	if err != nil {
 		return err
 	}
 

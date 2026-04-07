@@ -34,7 +34,8 @@ func LoadConfig() (*Config, error) {
 	}
 
 	var cfg Config
-	if err := yaml.Unmarshal(data, &cfg); err != nil {
+	err = yaml.Unmarshal(data, &cfg)
+	if err != nil {
 		return nil, err
 	}
 
@@ -47,14 +48,14 @@ func SaveConfig(cfg *Config) error {
 		return err
 	}
 
-	if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-		return err
+	if mkErr := os.MkdirAll(filepath.Dir(path), 0750); mkErr != nil {
+		return mkErr
 	}
 
-	data, err := yaml.Marshal(cfg)
-	if err != nil {
-		return err
+	data, marshalErr := yaml.Marshal(cfg)
+	if marshalErr != nil {
+		return marshalErr
 	}
 
-	return os.WriteFile(path, data, 0644)
+	return os.WriteFile(path, data, 0600)
 }

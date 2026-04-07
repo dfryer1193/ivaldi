@@ -1,7 +1,8 @@
-package merge
+package merge_test
 
 import (
 	"bytes"
+	"ivaldi/internal/merge"
 	"testing"
 )
 
@@ -29,7 +30,7 @@ test:
 	go test ./...
 `)
 
-	result, err := Makefile(dst, src)
+	result, err := merge.Makefile(dst, src)
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}

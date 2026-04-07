@@ -1,7 +1,8 @@
-package scaffold
+package scaffold_test
 
 import (
 	"bytes"
+	"ivaldi/internal/scaffold"
 	"os"
 	"path/filepath"
 	"testing"
@@ -9,16 +10,14 @@ import (
 
 func TestCreateDirectories(t *testing.T) {
 	tempDir := t.TempDir()
-	originalWD, _ := os.Getwd()
-	os.Chdir(tempDir)
-	defer os.Chdir(originalWD)
+	t.Chdir(tempDir)
 
-	binaries := []Binary{
+	binaries := []scaffold.Binary{
 		{Name: "api", Type: "http"},
 		{Name: "worker", Type: "worker"},
 	}
 
-	if err := CreateDirectories(binaries); err != nil {
+	if err := scaffold.CreateDirectories(binaries); err != nil {
 		t.Fatalf("failed to create directories: %v", err)
 	}
 
@@ -42,25 +41,23 @@ func TestCreateDirectories(t *testing.T) {
 
 func TestWriteMainFiles(t *testing.T) {
 	tempDir := t.TempDir()
-	originalWD, _ := os.Getwd()
-	os.Chdir(tempDir)
-	defer os.Chdir(originalWD)
+	t.Chdir(tempDir)
 
-	binaries := []Binary{
+	binaries := []scaffold.Binary{
 		{Name: "api", Type: "http"},
 		{Name: "cli", Type: "cli"},
 	}
 
-	if err := CreateDirectories(binaries); err != nil {
+	if err := scaffold.CreateDirectories(binaries); err != nil {
 		t.Fatalf("failed to create directories: %v", err)
 	}
 
-	config := &ProjectConfig{
+	config := &scaffold.ProjectConfig{
 		ModulePath: "github.com/test/app",
 		Binaries:   binaries,
 	}
 
-	if err := WriteMainFiles(config); err != nil {
+	if err := scaffold.WriteMainFiles(config); err != nil {
 		t.Fatalf("failed to write main files: %v", err)
 	}
 
@@ -85,19 +82,17 @@ func TestWriteMainFiles(t *testing.T) {
 
 func TestWriteTooling(t *testing.T) {
 	tempDir := t.TempDir()
-	originalWD, _ := os.Getwd()
-	os.Chdir(tempDir)
-	defer os.Chdir(originalWD)
+	t.Chdir(tempDir)
 
-	config := &ProjectConfig{
+	config := &scaffold.ProjectConfig{
 		ModulePath: "github.com/test/app",
-		Binaries:   []Binary{{Name: "api", Type: "http"}},
+		Binaries:   []scaffold.Binary{{Name: "api", Type: "http"}},
 		SetupCI:    true,
 		GoVersion:  "1.26",
 	}
 
 	// Test init mode
-	if err := WriteTooling(config, "init"); err != nil {
+	if err := scaffold.WriteTooling(config, "init"); err != nil {
 		t.Fatalf("failed to write tooling in init mode: %v", err)
 	}
 
@@ -112,7 +107,7 @@ func TestWriteTooling(t *testing.T) {
 	}
 
 	// Test clobber mode (should overwrite)
-	if err := WriteTooling(config, "clobber"); err != nil {
+	if err := scaffold.WriteTooling(config, "clobber"); err != nil {
 		t.Fatalf("failed to write tooling in clobber mode: %v", err)
 	}
 }
